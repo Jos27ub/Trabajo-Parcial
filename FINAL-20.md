@@ -1,0 +1,438 @@
+import numpy as np
+import random as r 
+import tkinter
+import pandas as pd
+import csv
+#Cambiar direccion
+
+DATA=pd.read_csv('C:/Users/Jossy/Downloads/Discreta/TEMP.csv', index_col=0, sep=';', encoding='latin-1')
+from tkinter import *
+def hola(n):
+    solasol = solapsol = solanub = solapnub = psolapsol = psolasol = psolanub = psolapnub = nubasol = nubapsol = nubanub = nubapnub = 0
+    pnubasol = pnubapsol = pnubanub = pnubapnub = 0
+    while n <60 or n>90:
+        n = int(input("Ingrese el valor de n: "))
+    climas = np.random.choice(["soleado", "parcialmente soleado", "nublado", "parcialmente nublado"], size=(1, n))
+    numeros = np.random.randint(low=17, high=30, size=(1, n))
+    for i in range (n): 
+        valor = climas[0][i]
+        if valor == "soleado":
+            numeros[0][i] = r.randint(27, 30)
+        elif valor == "parcialmente soleado":
+            numeros[0][i] = r.randint(24, 26)
+        elif valor == "parcialmente nublado":
+            numeros[0][i] = r.randint(21, 23)
+        elif valor == "nublado":
+            numeros[0][i] = r.randint(17, 20)
+    
+    for i in range (n-1):
+        valor = climas[0][i]
+        if valor == "soleado":
+            if climas[0][i+1]== "soleado":
+              solasol = solasol + 1 
+            elif climas[0][i+1]=="parcialmente soleado":
+              solapsol = solapsol + 1 
+            elif climas[0][i+1]=="nublado":
+              solanub = solanub + 1
+            elif climas[0][i+1]=="parcialmente nublado":
+              solapnub = solapnub + 1
+        elif valor == "parcialmente soleado":
+            if climas[0][i+1]== "soleado":
+              psolasol = psolasol + 1 
+            elif climas[0][i+1]=="parcialmente soleado":
+              psolapsol = psolapsol + 1
+            elif climas[0][i+1]=="nublado":
+              psolanub = psolanub + 1
+            elif climas[0][i+1]=="parcialmente nublado":
+              psolapnub = psolapnub + 1
+        elif valor == "nublado":
+            if climas[0][i+1]== "soleado":
+              nubasol = psolasol + 1 
+            elif climas[0][i+1]=="parcialmente soleado":
+              nubapsol = psolapsol + 1
+            elif climas[0][i+1]=="nublado":
+              nubanub = psolanub + 1
+            elif climas[0][i+1]=="parcialmente nublado":
+              nubapnub = psolapnub + 1
+        elif valor == "parcialmente nublado":
+            if climas[0][i+1]== "soleado":
+              pnubasol = psolasol + 1 
+            elif climas[0][i+1]=="parcialmente soleado":
+              pnubapsol = psolapsol + 1
+            elif climas[0][i+1]=="nublado":
+              pnubanub = psolanub + 1
+            elif climas[0][i+1]=="parcialmente nublado":
+              pnubapnub = psolapnub + 1
+    
+    probsas = solasol/(solasol+psolasol+nubasol+pnubasol)
+    probpsas=psolasol/(solasol+psolasol+nubasol+pnubasol)
+    probnas =nubasol/(solasol+psolasol+nubasol+pnubasol)
+    probpnas=pnubasol/(solasol+psolasol+nubasol+pnubasol)
+    
+    probsaps = solapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probpsaps=psolapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probnaps =nubapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probpnaps=pnubapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    
+    probsan = solanub/(solanub+psolanub+nubanub+pnubanub)
+    probpsan=psolanub/(solanub+psolanub+nubanub+pnubanub)
+    probnan =nubanub/(solanub+psolanub+nubanub+pnubanub)
+    probpnan=pnubanub/(solanub+psolanub+nubanub+pnubanub)
+    
+    probsapn = solapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probpsapn=psolapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probnapn =nubapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probpnapn=pnubapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+              
+    
+    matrix=np.array([[probsas,  probpsas,  probnas,  probpnas],
+                     [probsaps, probpsaps, probnaps, probpnaps], 
+                     [probsan,  probpsan,   probnan,  probpnan], 
+                     [probsapn, probpsapn, probnapn, probpnapn]])
+    print("\n", matrix)  #si no quieres que salga, se elimina esta linea
+    
+    states = ['soleado', 'nublado', 'parcialmente nublado','parcialmente soleado']
+    actual= climas[0][n-1]
+    
+    def predecir_clima(matrix, states, actual):
+        actual_idx = states.index(actual) 
+        probabilidades_transicion = matrix[actual_idx] 
+        nuevo_estado_idx = np.random.choice(len(states), p=probabilidades_transicion) #matriz de probabilidad
+        nuevo_estado = states[nuevo_estado_idx] 
+        print("Matriz de probabilidad: ")
+        print(probabilidades_transicion)
+        return nuevo_estado
+    print()
+    for i in range(1): 
+        print("Estado Actual:", actual)
+        actual = predecir_clima(matrix, states, actual) 
+    print()
+    for i in range(4): 
+        nuvtemp = Tk() 
+        nuvtemp.geometry("1250x630") 
+        if actual == "soleado":
+            #Cambiar direccion
+            temp = r.randint(27, 30)
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/Soleado.png')
+        elif actual == "parcialmente soleado":
+            #Cambiar direccion
+            temp = r.randint(24, 26)
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/ParcialmenteSoleado.png')
+        elif actual == "parcialmente nublado":
+            #Cambiar direccion
+            temp = r.randint(21, 23)
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/ParcialmenteNublado.png')
+        elif actual == "nublado":
+            #Cambiar direccion
+            temp = r.randint(17, 20)
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/Nublado.png') 
+        canvas2 = Canvas( nuvtemp, width =100, 
+                         height = 100) 
+        canvas2.pack(fill = "both", expand = True) 
+        canvas2.create_image( 0, 0, image = bg,  
+                             anchor = "nw") 
+        text_label = Label(nuvtemp, text=f"Dia {i+1}", font=("Bauhaus 93", 50))
+        text_label.place(x=0, y=0)
+        text_label.config(bg="White")
+        buttont = Button( nuvtemp, command=nuvtemp.destroy,text = "Continuar") 
+        buttont_canvas = canvas2.create_window( 630, 500,  
+                                               anchor = "nw", 
+                                               window = buttont)  
+        nuvtemp.mainloop()
+        print("Dia", i+1, ":", actual, "\t\tTemperatura:", temp ) #si no quieres que salga, se elimina esta linea
+        actual = predecir_clima(matrix, states, actual)
+#funcion para la base de datos
+
+def database(n, ciudad):
+    #Si son numeros cambiamos los parametros
+    if ciudad=='Iquitos':
+        Limacity= list(DATA['Iquitos'])
+    elif ciudad=='Arequipa':
+        Limacity= list(DATA['Arequipa'])
+    elif ciudad=='Trujillo':
+        Limacity= list(DATA['Trujillo'])
+    elif ciudad=='Lambayeque':
+        Limacity= list(DATA['Lambayeque'])
+    elif ciudad=='Ancash':
+        Limacity= list(DATA['Ancash'])
+
+    
+    #print(Limacity)
+    
+    solasol = solapsol = solanub = solapnub = psolapsol = psolasol = psolanub = psolapnub = nubasol = nubapsol = nubanub = nubapnub = 0
+    pnubasol = pnubapsol = pnubanub = pnubapnub = 0
+    
+    for i in range (n-1):
+        valor = Limacity[i]
+        if valor == "Soleado":
+            if Limacity[i+1]== "Soleado":
+              solasol = solasol + 1 
+            elif Limacity[i+1]=="Parcialmente Soleado":
+              solapsol = solapsol + 1 
+            elif Limacity[i+1]=="Nublado":
+              solanub = solanub + 1
+            elif Limacity[i+1]=="Parcialmente Nublado":
+              solapnub = solapnub + 1
+        elif valor == "Parcialmente Soleado":
+            if Limacity[i+1]== "Soleado":
+              psolasol = psolasol + 1 
+            elif Limacity[i+1]=="Parcialmente Soleado":
+              psolapsol = psolapsol + 1
+            elif Limacity[i+1]=="Nublado":
+              psolanub = psolanub + 1
+            elif Limacity[i+1]=="Parcialmente Nublado":
+              psolapnub = psolapnub + 1
+        elif valor == "Nublado":
+            if Limacity[i+1]== "Soleado":
+              nubasol = psolasol + 1 
+            elif Limacity[i+1]=="Parcialmente Soleado":
+              nubapsol = psolapsol + 1
+            elif Limacity[i+1]=="Nublado":
+              nubanub = psolanub + 1
+            elif Limacity[i+1]=="Parcialmente Nublado":
+              nubapnub = psolapnub + 1
+        elif valor == "Parcialmente Nublado":
+            if Limacity[i+1]== "Soleado":
+              pnubasol = psolasol + 1 
+            elif Limacity[i+1]=="Parcialmente Soleado":
+              pnubapsol = psolapsol + 1
+            elif Limacity[i+1]=="Nublado":
+              pnubanub = psolanub + 1
+            elif Limacity[i+1]=="Parcialmente Nublado":
+              pnubapnub = psolapnub + 1
+    
+    
+    probsas = solasol/(solasol+psolasol+nubasol+pnubasol)
+    probpsas=psolasol/(solasol+psolasol+nubasol+pnubasol)
+    probnas =nubasol/(solasol+psolasol+nubasol+pnubasol)
+    probpnas=pnubasol/(solasol+psolasol+nubasol+pnubasol)
+    
+    probsaps = solapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probpsaps=psolapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probnaps =nubapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    probpnaps=pnubapsol/(solapsol+psolapsol+nubapsol+pnubapsol)
+    
+    probsan = solanub/(solanub+psolanub+nubanub+pnubanub)
+    probpsan=psolanub/(solanub+psolanub+nubanub+pnubanub)
+    probnan =nubanub/(solanub+psolanub+nubanub+pnubanub)
+    probpnan=pnubanub/(solanub+psolanub+nubanub+pnubanub)
+    
+    probsapn = solapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probpsapn=psolapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probnapn =nubapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+    probpnapn=pnubapnub/(solapnub+psolapnub+nubapnub+pnubapnub)
+              
+    
+    matrix=np.array([[probsas,  probpsas,  probnas,  probpnas],
+                     [probsaps, probpsaps, probnaps, probpnaps], 
+                     [probsan,  probpsan,   probnan,  probpnan], 
+                     [probsapn, probpsapn, probnapn, probpnapn]])
+    
+    print("\n", matrix)   #si no quieres que salga, se elimina esta linea 
+    numeros = np.random.randint(low=17, high=30, size=(1, n))
+    
+    states = ['Soleado', 'Nublado', 'Parcialmente Nublado','Parcialmente Soleado']
+    actual= Limacity[n-1]
+    
+    def predecir_clima(matrix, states, actual):
+        actual_idx = states.index(actual) 
+        probabilidades_transicion = matrix[actual_idx] 
+        nuevo_estado_idx = np.random.choice(len(states), p=probabilidades_transicion)
+        nuevo_estado = states[nuevo_estado_idx] 
+        return nuevo_estado
+        print("Matriz de probabilidad: ")
+        print(probabilidades_transicion)
+
+    print()
+    for i in range(1): 
+        print("Estado Actual:", actual)#si no quieres que salga, se elimina esta linea
+        actual = predecir_clima(matrix, states, actual) 
+    print()
+    for i in range(4): 
+        nuvtemp = Tk() 
+        nuvtemp.geometry("1250x630") 
+        if actual == "Soleado":
+            temp = r.randint(27, 30)
+            #Cambiar direccion
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/Soleado.png')
+        elif actual == "Parcialmente Soleado":
+            temp = r.randint(24, 26)
+            #Cambiar direccion
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/ParcialmenteSoleado.png')
+        elif actual == "Parcialmente Nublado":
+            temp = r.randint(21, 23)
+            #Cambiar direccion
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/ParcialmenteNublado.png')
+        elif actual == "Nublado":
+            temp = r.randint(17, 20)
+            #Cambiar direccion
+            bg = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/Nublado.png') 
+        canvas2 = Canvas( nuvtemp, width =100, 
+                         height = 100) 
+        canvas2.pack(fill = "both", expand = True) 
+        canvas2.create_image( 0, 0, image = bg,  
+                             anchor = "nw") 
+        text_label = Label(nuvtemp, text=f"Dia {i+1}", font=("Bauhaus 93", 50))
+        text_label.place(x=0, y=0)
+        text_label.config(bg="White")
+        buttont = Button( nuvtemp, command=nuvtemp.destroy,text = "Continuar") 
+        buttont_canvas = canvas2.create_window( 630, 500,  
+                                               anchor = "nw", 
+                                               window = buttont)  
+        nuvtemp.mainloop()
+        print("Dia", i+1, ":", actual, "\t\tTemperatura:", temp)#si no quieres que salga, se elimina esta linea
+        actual = predecir_clima(matrix, states, actual)
+
+valor = ["abc", "123","12"]
+comienzo = Tk() 
+comienzo.geometry("1250x630") 
+bg1 = PhotoImage(file = 'C:/Users/Jossy/Downloads/Discreta/iClima.png') 
+canvas1 = Canvas( comienzo, width =100, 
+                 height = 100) 
+canvas1.pack(fill = "both", expand = True) 
+canvas1.create_image( 0, 0, image = bg1,  
+                     anchor = "nw") 
+button1 = Button( comienzo, command=comienzo.destroy,text = "Continuar") 
+button1_canvas = canvas1.create_window( 630, 500,  
+                                       anchor = "nw", 
+                                       window = button1)  
+
+lopciones = Tk()
+lopciones.title("iClima ")
+marco = LabelFrame(lopciones, text="Lista de opciones\n1)Extraer Base de Datos\n2)Datos aleatorios",)
+marco.pack()
+entrada = Entry(marco, 
+                border=5,
+                width=45
+                )
+entrada.pack()
+entrada.insert(0,"Elige una opcion")
+entrada.bind("<Button-1>", lambda e: entrada.delete(0, tkinter.END))
+def enviar():
+    op = entrada.get() 
+    entrada.delete(0, tkinter.END)
+    entrada.insert(0,"Elige una opcion")
+    if op == '1':
+        valor[0] = op
+        botonnum()
+        botonnum2()
+    elif op == '2':
+        valor[0] = op
+        botonnum()
+    else:
+        entrada.delete(0, tkinter.END)
+        entrada.insert(0,"Opcion incorrecta")
+boton = Button(marco, 
+                text="Enviar", 
+                command=enviar,
+                border=3,
+                width=26
+                ).pack()
+boton = Button(marco, 
+                text="Salir", 
+                command=lopciones.destroy,
+                border=3,
+                width=26
+                ).pack()
+def botonnum():
+    numdias = Tk()
+    numdias.title("iClima ")
+    marco2 = LabelFrame(numdias, text="Elige el numero de dias",)
+    marco2.pack()
+    entrada2 = Entry(marco2, 
+                    border=5,
+                    width=45
+                    )
+    entrada2.pack()
+    entrada2.insert(0,"Elige una opcion")
+    entrada2.bind("<Button-1>", lambda e: entrada2.delete(0, tkinter.END))
+    def numero():
+        op = entrada2.get() 
+        entrada2.delete(0, tkinter.END)
+        entrada2.insert(0,"Elige una opcion")
+        if 60 <= int(op) <= 90:
+            valor[1] = int(op)
+        else:
+            entrada2.delete(0, tkinter.END)
+            entrada2.insert(0,"Opcion incorrecta")
+    boton2 = Button(marco2, 
+                    text="Enviar", 
+                    command=numero,
+                    border=3,
+                    width=26
+                    ).pack()
+    boton2 = Button(marco2, 
+                    text="Salir", 
+                    command=numdias.destroy,
+                    border=3,
+                    width=26
+                    ).pack()
+#base de datos
+#escoge las ciudades - hay 5 
+def botonnum2():
+    ciudades = Tk()
+    ciudades.title("iClima ")
+    marco3 = LabelFrame(ciudades, text="Elige la ciudad\n1)Arequipa\n2)Trujillo\n3)Lambayeque\n4)Ancash\n5)Iquitos",)
+    marco3.pack()
+    entrada3 = Entry(marco3, 
+                    border=5,
+                    width=45
+                    )
+    entrada3.pack()
+    entrada3.insert(0,"Elige una opcion")
+
+    entrada3.bind("<Button-1>", lambda e: entrada3.delete(0, tkinter.END))
+
+    def numero():
+        op = entrada3.get() 
+        entrada3.delete(0, tkinter.END)
+        entrada3.insert(0,"Elige una opcion")
+        if 1 <= int(op) <= 5:
+            valor[2] = int(op)
+        else:
+            entrada3.delete(0, tkinter.END)
+            entrada3.insert(0,"Opcion incorrecta")
+    boton3 = Button(marco3, 
+                    text="Enviar", 
+                    command=numero,
+                    border=3,
+                    width=26
+                    ).pack()
+    boton3 = Button(marco3, 
+                    text="Salir", 
+                    command=ciudades.destroy,
+                    border=3,
+                    width=26
+                    ).pack()    
+comienzo.mainloop()
+lopciones.mainloop()
+n = int(valor[1])
+
+if valor[0]== '1':
+    #Insertar codigo
+    if valor[2]==1:
+        #Podemos agregarle una imagen de arequipa antes de poner laas temperaturas
+        print("Pronostico de Arequipa")
+        database(n,"Arequipa")
+
+    elif valor[2]==2:
+        print("Pronostico de Trujillo")
+        database(n,"Trujillo")
+        
+    elif valor[2]==3:
+        print("Pronostico de Lambayeque")
+        database(n,"Lambayeque")
+        
+    elif valor[2]==4:
+        print("Pronostico de Ancash")
+        database(n,"Ancash")
+
+    elif valor[2]==5:
+        print("Pronostico de Iquitos")
+        database(n,"Iquitos")
+
+elif valor[0]== '2':
+    hola(n)
+   
+print("La aplicacion ha finalizado!!!!!!!!!!!!!!!!")
+print("Espero que le haya gustado")
